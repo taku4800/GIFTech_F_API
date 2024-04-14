@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  db:
+    container_name: db_yuchami
+    image: postgres:latest
+    tty: true
+    platform: linux/x86_64
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: yuchami_api  # データベース名
+      POSTGRES_USER: yuchami    # データベースユーザー名
+      POSTGRES_PASSWORD: yuchami0908
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
