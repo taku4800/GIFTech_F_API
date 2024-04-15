@@ -13,7 +13,7 @@ func ActivateRouter() {
 
 	e.GET("/manager/remindItemLists", controllers.GetLists)
 	e.GET("/manager/remindItemLists/:id", controllers.GetList)
-	e.POST("/manager/remindItemList", controllers.CreateList)
+	e.POST("/manager/remindItemLists", controllers.CreateList)
 
 	e.Logger.Fatal(e.Start(":8989"))
 }

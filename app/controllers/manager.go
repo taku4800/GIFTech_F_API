@@ -30,7 +30,8 @@ func CreateList(c echo.Context) error {
 	if err := c.Bind(&list); err != nil {
 		return err
 	}
-	err := databases.CreateList(list)
+	var err error
+	list, err = databases.CreateList(list)
 	if err != nil {
 		return err
 	}

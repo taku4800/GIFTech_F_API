@@ -20,7 +20,10 @@ func SetupDatabase() {
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
-	if err = DB.AutoMigrate(&models.RemindItem{}, &models.RemindItemList{}); err != nil {
+	if err = DB.AutoMigrate(&models.RemindItem{}); err != nil {
+		log.Fatal("Failed to migrate database:", err)
+	}
+	if err = DB.AutoMigrate(&models.RemindItemList{}); err != nil {
 		log.Fatal("Failed to migrate database:", err)
 	}
 }
@@ -37,12 +40,12 @@ func GetListByID(id string) (models.RemindItemList, error) {
 	return list, res.Error
 }
 
-func CreateItem(item models.RemindItem) error {
-	res := DB.Create(item)
-	return res.Error
+func CreateItem(item models.RemindItem) (models.RemindItem, error) {
+	res := DB.Create(&item)
+	return item, res.Error
 }
 
-func CreateList(list models.RemindItemList) error {
-	res := DB.Create(list)
-	return res.Error
+func CreateList(list models.RemindItemList) (models.RemindItemList, error) {
+	res := DB.Create(&list)
+	return list, res.Error
 }

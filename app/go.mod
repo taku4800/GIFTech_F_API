@@ -4,6 +4,7 @@ go 1.22.0
 
 require (
 	github.com/labstack/echo/v4 v4.11.4
+	github.com/oklog/ulid v1.3.1
 	gorm.io/driver/postgres v1.5.7
 	gorm.io/gorm v1.25.9
 )
