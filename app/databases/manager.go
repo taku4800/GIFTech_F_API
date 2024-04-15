@@ -49,3 +49,13 @@ func CreateList(list models.RemindItemList) (models.RemindItemList, error) {
 	res := DB.Create(&list)
 	return list, res.Error
 }
+
+func UpdateItem(item models.RemindItem) (models.RemindItem, error) {
+	res := DB.Save(&item)
+	return item, res.Error
+}
+
+func UpdateList(list models.RemindItemList) (models.RemindItemList, error) {
+	res := DB.Save(&list)
+	return list, res.Error
+}
