@@ -1,8 +1,8 @@
 package router
 
 import (
-	"yuchami-app-api/controllers"
-	"yuchami-app-api/databases"
+	"yuchami-tinder-app/controllers"
+	"yuchami-tinder-app/databases"
 
 	"github.com/labstack/echo/v4"
 )
@@ -17,5 +17,5 @@ func ActivateRouter() {
 	e.PATCH("/manager/remindItemLists/:id", controllers.UpdateList)
 	e.DELETE("/manager/remindItemLists/:id", controllers.DeleteList)
 
-	e.Logger.Fatal(e.Start(":8989"))
+	e.Logger.Fatal(e.Start(":8080"))
 }

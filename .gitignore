@@ -48,3 +48,6 @@ bundles/
 vendor/pkg/
 pyenv
 Vagrantfile
+.env
+
+yuchami-tinder-app
