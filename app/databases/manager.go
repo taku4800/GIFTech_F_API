@@ -2,6 +2,7 @@ package databases
 
 import (
 	"log"
+	"os"
 	"yuchami-app-api/models"
 
 	"gorm.io/driver/postgres"
@@ -12,9 +13,9 @@ import (
 var DB *gorm.DB // グローバルアクセス
 
 func SetupDatabase() {
-	connStr := "host=localhost user=yuchami password=yuchami0908 dbname=yuchami_api port=5432 sslmode=disable TimeZone=Asia/Tokyo"
+	URL := os.Getenv("DATABASE_URL")
 	var err error
-	DB, err = gorm.Open(postgres.Open(connStr), &gorm.Config{
+	DB, err = gorm.Open(postgres.Open(URL), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
 	})
 	if err != nil {
