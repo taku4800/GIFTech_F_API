@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"net/http"
-	"yuchami-app-api/databases"
-	"yuchami-app-api/models"
+	"yuchami-tinder-app/databases"
+	"yuchami-tinder-app/models"
 
 	"github.com/labstack/echo/v4"
 )

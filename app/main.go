@@ -1,7 +1,7 @@
 package main
 
 import (
-	"yuchami-app-api/router"
+	"yuchami-tinder-app/router"
 )
 
 func main() {

@@ -2,8 +2,10 @@ package databases
 
 import (
 	"log"
-	"yuchami-app-api/models"
+	"os"
+	"yuchami-tinder-app/models"
 
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -12,9 +14,10 @@ import (
 var DB *gorm.DB // グローバルアクセス
 
 func SetupDatabase() {
-	connStr := "host=localhost user=yuchami password=yuchami0908 dbname=yuchami_api port=5432 sslmode=disable TimeZone=Asia/Tokyo"
+	godotenv.Load(".env")
+	dbUrl := os.Getenv("DATABASE_URL")
 	var err error
-	DB, err = gorm.Open(postgres.Open(connStr), &gorm.Config{
+	DB, err = gorm.Open(postgres.Open(dbUrl), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
 	})
 	if err != nil {
