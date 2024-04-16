@@ -13,13 +13,13 @@ https://yuchami-tinder-app.fly.dev/ に対してデプロイしています。<b
     [
         {
             "order": 1,
-            "url": "http://test.com",
+            "source": "SGVsbG8sIFdvcmxkIQ==",
             "status": "item1",
             "is_delete": false
         },
         {
             "order": 2,
-            "url": "http://test.com",
+            "source": "SGVsbG8sIFdvcmxkIQ==",
             "status": "item2",
             "is_delete": false
         }

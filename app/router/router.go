@@ -17,5 +17,9 @@ func ActivateRouter() {
 	e.PATCH("/manager/remindItemLists/:id", controllers.UpdateList)
 	e.DELETE("/manager/remindItemLists/:id", controllers.DeleteList)
 
+	e.GET("/test/images", controllers.GetImages)
+	e.GET("/test/images/:id", controllers.GetImage)
+	e.POST("/test/images/:name", controllers.UploadImage)
+
 	e.Logger.Fatal(e.Start(":8080"))
 }
