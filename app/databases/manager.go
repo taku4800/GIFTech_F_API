@@ -29,6 +29,9 @@ func SetupDatabase() {
 	if err = DB.AutoMigrate(&models.RemindItemList{}); err != nil {
 		log.Fatal("Failed to migrate database:", err)
 	}
+	if err = DB.AutoMigrate(&models.TestImage{}); err != nil {
+		log.Fatal("Failed to migrate database:", err)
+	}
 }
 
 func GetLists() ([]models.RemindItemList, error) {

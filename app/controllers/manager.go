@@ -69,7 +69,7 @@ func UpdateList(c echo.Context) error {
 		newItem := models.RemindItem{
 			ListID:   list.ID,
 			Order:    item.Order,
-			Url:      item.Url,
+			Source:   item.Source,
 			Status:   item.Status,
 			IsDelete: item.IsDelete,
 		}

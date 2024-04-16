@@ -12,7 +12,7 @@ type RemindItem struct {
 	ID        string    `json:"id" gorm:"primary key"`
 	ListID    string    `json:"list_id"`
 	Order     int       `json:"order"`
-	Url       string    `json:"url"`
+	Source    []byte    `json:"source" gorm:"size:70000"`
 	Status    string    `json:"status"`
 	IsDelete  bool      `json:"is_delete"`
 	CreatedAt time.Time `json:"created_at"`
