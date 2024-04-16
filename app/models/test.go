@@ -10,7 +10,7 @@ import (
 
 type TestImage struct {
 	ID        string    `json:"id" gorm:"primary key"`
-	Source    []byte    `json:"image" gorm:"size:70000"`
+	Source    []byte    `json:"image" gorm:"size:5000000"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
