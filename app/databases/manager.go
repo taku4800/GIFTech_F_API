@@ -65,3 +65,13 @@ func UpdateList(list models.RemindItemList) (models.RemindItemList, error) {
 	res := DB.Save(&list)
 	return list, res.Error
 }
+
+func DeleteItem(item models.RemindItem) error {
+	res := DB.Delete(&item)
+	return res.Error
+}
+
+func DeleteList(list models.RemindItemList) error {
+	res := DB.Delete(&list)
+	return res.Error
+}

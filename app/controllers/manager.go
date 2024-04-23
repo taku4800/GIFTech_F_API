@@ -91,16 +91,14 @@ func DeleteList(c echo.Context) error {
 	if list, err = databases.GetListByID(id); err != nil {
 		return err
 	}
-	// 既存のRemindItemsに対し、is_delete=trueに更新
+	// RemindItemsを削除
 	for _, item := range list.RemindItems {
-		item.IsDelete = true
-		if _, err := databases.UpdateItem(item); err != nil {
+		if err := databases.DeleteItem(item); err != nil {
 			return err
 		}
 	}
-	// Listを更新
-	list.IsDelete = true
-	list, err = databases.UpdateList(list)
+	// Listを削除
+	err = databases.DeleteList(list)
 	if err != nil {
 		return err
 	}
