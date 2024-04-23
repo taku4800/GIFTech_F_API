@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"yuchami-tinder-app/databases"
 	"yuchami-tinder-app/models"
@@ -40,4 +41,17 @@ func UpdateItem(c echo.Context) error {
 		return err
 	}
 	return c.JSON(http.StatusOK, item)
+}
+
+func DeleteItem(c echo.Context) error {
+	id := c.Param("id")
+	var item models.RemindItem
+	var err error
+	if item, err = databases.GetItemByID(id); err != nil {
+		return err
+	}
+	if err = databases.DeleteItem(item); err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, map[string]string{"message": fmt.Sprintf("Deleted item with id = %s completed.", id)})
 }
