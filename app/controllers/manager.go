@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"yuchami-tinder-app/databases"
 	"yuchami-tinder-app/models"
@@ -11,7 +12,7 @@ import (
 func GetLists(c echo.Context) error {
 	lists, err := databases.GetLists()
 	if err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 	}
 	return c.JSON(http.StatusOK, lists)
 }
@@ -20,7 +21,7 @@ func GetList(c echo.Context) error {
 	id := c.Param("id")
 	list, err := databases.GetListByID(id)
 	if err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 	}
 	return c.JSON(http.StatusOK, list)
 }
@@ -28,12 +29,12 @@ func GetList(c echo.Context) error {
 func CreateList(c echo.Context) error {
 	var list models.RemindItemList
 	if err := c.Bind(&list); err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 	}
 	var err error
 	list, err = databases.CreateList(list)
 	if err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 	}
 	return c.JSON(http.StatusCreated, list)
 }
@@ -44,41 +45,43 @@ func UpdateList(c echo.Context) error {
 	var input models.RemindItemList
 	var err error
 	if err = c.Bind(&input); err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 	}
 	// DBにあるListを取得
 	var list models.RemindItemList
 	if list, err = databases.GetListByID(id); err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 	}
-	// 既存のRemindItemsに対し、is_delete=trueに更新
+	// RemindItemsに対し、Statusを"送信済"に変更
 	for _, item := range list.RemindItems {
-		item.IsDelete = true
+		item.Status = "送信済"
 		if _, err := databases.UpdateItem(item); err != nil {
-			return err
+			return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 		}
 	}
 	// Listに更新情報を詰める
-	list.ID = id
 	list.Name = input.Name
 	list.Status = input.Status
 	list.IsDelete = input.IsDelete
-	// inputからのItemsを追加
-	list.RemindItems = nil
-	for _, item := range input.RemindItems {
-		newItem := models.RemindItem{
-			ListID:   list.ID,
-			Order:    item.Order,
-			Source:   item.Source,
-			Status:   item.Status,
-			IsDelete: item.IsDelete,
-		}
-		list.RemindItems = append(list.RemindItems, newItem)
-	}
 	// Listを更新
 	list, err = databases.UpdateList(list)
 	if err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+	}
+	// 自分以外のListのStatusを"アーカイブ"に変更
+	var lists []models.RemindItemList
+	if lists, err = databases.GetListsExcludingID(id); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+	}
+	for _, l := range lists {
+		l.Status = "アーカイブ"
+		if _, err := databases.UpdateList(l); err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+		}
+	}
+	// 最新のListの情報をとってくる
+	if list, err = databases.GetListByID(id); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 	}
 	return c.JSON(http.StatusOK, list)
 }
@@ -89,20 +92,18 @@ func DeleteList(c echo.Context) error {
 	var list models.RemindItemList
 	var err error
 	if list, err = databases.GetListByID(id); err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 	}
-	// 既存のRemindItemsに対し、is_delete=trueに更新
+	// RemindItemsを削除
 	for _, item := range list.RemindItems {
-		item.IsDelete = true
-		if _, err := databases.UpdateItem(item); err != nil {
-			return err
+		if err := databases.DeleteItem(item); err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 		}
 	}
-	// Listを更新
-	list.IsDelete = true
-	list, err = databases.UpdateList(list)
+	// Listを削除
+	err = databases.DeleteList(list)
 	if err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 	}
-	return c.JSON(http.StatusOK, list)
+	return c.JSON(http.StatusOK, map[string]string{"message": fmt.Sprintf("deleted list with id = %s completed.", id)})
 }

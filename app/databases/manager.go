@@ -46,6 +46,12 @@ func GetListByID(id string) (models.RemindItemList, error) {
 	return list, res.Error
 }
 
+func GetListsExcludingID(id string) ([]models.RemindItemList, error) {
+	var lists []models.RemindItemList
+	res := DB.Not("id = ?", id).Find(&lists)
+	return lists, res.Error
+}
+
 func CreateItem(item models.RemindItem) (models.RemindItem, error) {
 	res := DB.Create(&item)
 	return item, res.Error
@@ -64,4 +70,14 @@ func UpdateItem(item models.RemindItem) (models.RemindItem, error) {
 func UpdateList(list models.RemindItemList) (models.RemindItemList, error) {
 	res := DB.Save(&list)
 	return list, res.Error
+}
+
+func DeleteItem(item models.RemindItem) error {
+	res := DB.Delete(&item)
+	return res.Error
+}
+
+func DeleteList(list models.RemindItemList) error {
+	res := DB.Delete(&list)
+	return res.Error
 }
