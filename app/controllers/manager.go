@@ -51,7 +51,7 @@ func UpdateList(c echo.Context) error {
 	if list, err = databases.GetListByID(id); err != nil {
 		return err
 	}
-	// 既存のRemindItemsに対し、Statusを"送信済"に変更
+	// RemindItemsに対し、Statusを"送信済"に変更
 	for _, item := range list.RemindItems {
 		item.Status = "送信済"
 		if _, err := databases.UpdateItem(item); err != nil {
@@ -66,6 +66,17 @@ func UpdateList(c echo.Context) error {
 	list, err = databases.UpdateList(list)
 	if err != nil {
 		return err
+	}
+	// 自分以外のListのStatusを"アーカイブ"に変更
+	var lists []models.RemindItemList
+	if lists, err = databases.GetListsExcludingID(id); err != nil {
+		return err
+	}
+	for _, l := range lists {
+		l.Status = "アーカイブ"
+		if _, err := databases.UpdateList(l); err != nil {
+			return err
+		}
 	}
 	// 最新のListの情報をとってくる
 	if list, err = databases.GetListByID(id); err != nil {
