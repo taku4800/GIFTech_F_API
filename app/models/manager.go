@@ -11,6 +11,7 @@ import (
 type RemindItem struct {
 	ID        string    `json:"id" gorm:"primary key"`
 	ListID    string    `json:"list_id"`
+	Name      string    `json:"string"`
 	Order     int       `json:"order"`
 	Source    []byte    `json:"source" gorm:"size:5000000"`
 	Status    string    `json:"status"`

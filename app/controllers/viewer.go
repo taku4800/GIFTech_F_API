@@ -31,6 +31,7 @@ func UpdateItem(c echo.Context) error {
 		return err
 	}
 	// itemに更新情報を詰める
+	item.Name = input.Name
 	item.Order = input.Order
 	item.Source = input.Source
 	item.Status = input.Status
