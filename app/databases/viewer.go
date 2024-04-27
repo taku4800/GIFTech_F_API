@@ -6,7 +6,7 @@ import (
 
 func GetSentLists() ([]models.RemindItemList, error) {
 	var lists []models.RemindItemList
-	res := DB.Preload("RemindItems", "status = ?", "送信済").
+	res := DB.Preload("RemindItems", "status IN ?", []string{"送信済", "トラブルあり"}).
 		Where("status = ?", "送信済").Find(&lists)
 	return lists, res.Error
 }
