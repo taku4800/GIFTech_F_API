@@ -21,6 +21,8 @@ func ActivateRouter() {
 	e.PATCH("/viewer/remindItems/:id", controllers.UpdateItem)
 	e.DELETE("/viewer/remindItems/:id", controllers.DeleteItem)
 
+	e.POST("/viewer/notification/:user", controllers.SendNotification)
+
 	e.GET("/test/images", controllers.GetImages)
 	e.GET("/test/images/:id", controllers.GetImage)
 	e.POST("/test/images/:name", controllers.UploadImage)

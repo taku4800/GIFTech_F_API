@@ -1,8 +1,13 @@
 package controllers
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"strings"
 	"yuchami-tinder-app/databases"
 	"yuchami-tinder-app/models"
 
@@ -55,4 +60,46 @@ func DeleteItem(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 	}
 	return c.JSON(http.StatusOK, map[string]string{"message": fmt.Sprintf("deleted item with id = %s completed.", id)})
+}
+
+func SendNotification(c echo.Context) error {
+	user := c.Param("user")
+	userUpper := strings.ToUpper(user)
+	sendTo := os.Getenv(userUpper)
+	// リクエストするJSONデータ
+	data := []map[string]string{
+		{
+			"to":    sendTo,
+			"sound": "default",
+			"title": "モッテンダー",
+			"body":  "マネさんから忘れ物リストが届きました！",
+		},
+	}
+	// JSONデータをバイト配列にエンコード
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+	}
+	// HTTP POSTリクエストを作成
+	url := "https://exp.host/--/api/v2/push/send"
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+	}
+	// ヘッダーを設定
+	req.Header.Set("Content-Type", "application/json")
+	// HTTPクライアントを作成してリクエストを送信
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+	}
+	defer resp.Body.Close()
+	// レスポンスボディを読み出し
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+	}
+	// レスポンスボディを返却
+	return c.JSON(resp.StatusCode, string(body))
 }
