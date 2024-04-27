@@ -1,11 +1,9 @@
 package controllers
 
 import (
-	"bytes"
 	"fmt"
-	"image/png"
+	"io"
 	"net/http"
-	"os"
 	"yuchami-tinder-app/databases"
 	"yuchami-tinder-app/models"
 
@@ -68,25 +66,23 @@ func SubscribeImage(c echo.Context) error {
 	if item, err = databases.GetItemByID(id); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 	}
-	// 指定画像をローカルから開く
-	imgName := c.Param("name")
-	imgPath := fmt.Sprintf("../src/images/%s.png", imgName)
-	file, err := os.Open(imgPath)
+	// ファイルをリクエストから取得
+	file, err := c.FormFile("image")
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 	}
-	defer file.Close()
-	img, err := png.Decode(file)
+	src, err := file.Open()
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 	}
-	// バッファを用意してバイトスライスを取得する
-	buf := new(bytes.Buffer)
-	if err := png.Encode(buf, img); err != nil {
+	defer src.Close()
+	// ファイルの内容を読み込む
+	fileData, err := io.ReadAll(src)
+	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 	}
-	// 画像を保存
-	item.Source = buf.Bytes()
+	// 画像を登録
+	item.Source = fileData
 	item, err = databases.UpdateItem(item)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
