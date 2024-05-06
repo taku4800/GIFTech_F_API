@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"yuchami-tinder-app/databases"
 	"yuchami-tinder-app/models"
@@ -55,4 +56,36 @@ func DeleteItem(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 	}
 	return c.JSON(http.StatusOK, map[string]string{"message": fmt.Sprintf("deleted item with id = %s completed.", id)})
+}
+
+func SubscribeImage(c echo.Context) error {
+	id := c.Param("id")
+	// DBにあるItemを検索
+	var item models.RemindItem
+	var err error
+	if item, err = databases.GetItemByID(id); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+	}
+	// ファイルをリクエストから取得
+	file, err := c.FormFile("image")
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+	}
+	src, err := file.Open()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+	}
+	defer src.Close()
+	// ファイルの内容を読み込む
+	fileData, err := io.ReadAll(src)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+	}
+	// 画像を登録
+	item.Source = fileData
+	item, err = databases.UpdateItem(item)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+	}
+	return c.JSON(http.StatusOK, item)
 }
